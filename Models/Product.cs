@@ -22,5 +22,7 @@ public class Product
   public int Quantity { get; set; }
 
   public DateTime CreatedAt { get; set; }
+
+  public virtual ICollection<Transaction>? Transactions { get; set; }
 }
 
