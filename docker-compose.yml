@@ -1,0 +1,41 @@
+version: '3.4'
+
+networks:
+  dev:
+    driver: bridge
+
+services:
+  web-api:
+    image: docker.io/library/webapi
+    depends_on:
+      - "postgres"
+    container_name: webapi
+    ports:
+      - "8088:80"
+    build: 
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      - ConnectionStrings__DefaultConnection=User ID=postgres;Password=postgres;Server=postgres;Port=5432;Database=MStarSupplyDB; IntegratedSecurity=true;Pooling=true;
+      - ASPNETCORE_URLS=http://+:80
+    networks:
+      - dev
+
+  postgres:
+    image: postgres:latest
+    container_name: postgres
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=MStarSupplyDB
+    ports:
+      - "5433:5432"
+    restart: always
+    volumes:
+      - app_data:/var/lib/postgres/data
+    networks:
+      - dev
+
+volumes:
+  app_data:
+  
