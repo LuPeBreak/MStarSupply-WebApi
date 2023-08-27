@@ -51,8 +51,9 @@ public class ProductController : ControllerBase
 
   }
 
-  [HttpPut]
-  public async Task<IActionResult> Put(int id, [FromBody] Product product)
+  [HttpPatch]
+  [Route("{id}")]
+  public async Task<IActionResult> Put(int id, Product product)
   {
     try
     {
@@ -62,7 +63,7 @@ public class ProductController : ControllerBase
 
       if (productToUpdate == null) return NotFound($"Product with Id = {id} not found");
 
-      db.Update(product);
+      productToUpdate.Quantity= product.Quantity;
 
       await db.SaveChangesAsync();
 

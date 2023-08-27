@@ -21,7 +21,7 @@ public class TransactionController : ControllerBase
   [HttpGet()]
   public async Task<IActionResult> Get()
   {
-    var allTransactions = await db.Transactions.ToListAsync();
+    var allTransactions = await db.Transactions.Include(transaction => transaction.Product).ToListAsync();
 
     return Ok(allTransactions);
   }
@@ -46,11 +46,7 @@ public class TransactionController : ControllerBase
 
     try
     {
-      await db.Transactions.AddAsync(transaction);
-      await db.SaveChangesAsync();
-
-      var updatedProduct = await db.Products.FindAsync(transaction.ProductId);
-
+      // var updatedProduct = await db.Products.FindAsync(transaction.ProductId);
       // if("income" == transaction.Type){
       //   updatedProduct.Quantity += transaction.Quantity;
       // }
@@ -59,6 +55,13 @@ public class TransactionController : ControllerBase
       // } // Deveria usar Patch Delta<product>
       //await db.SaveChangesAsync()
       // databaseTransaction.Commit();
+
+      transaction.Product = await db.Products.FindAsync(transaction.ProductId);
+      await db.Transactions.AddAsync(transaction);
+
+      await db.SaveChangesAsync();
+
+
 
       return CreatedAtAction(nameof(GetById),
           new { id = transaction.Id },
